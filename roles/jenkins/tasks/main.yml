@@ -1,0 +1,12 @@
+---
+- name: Add apt source
+  sudo: true
+  copy: src=jenkins.list dest=/etc/apt/sources.list.d/
+
+- name: Add apt key
+  sudo: true
+  apt_key: url=http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key state=present
+
+- name: Install jenkins
+  sudo: true
+  apt: name=jenkins update_cache=yes state=latest
