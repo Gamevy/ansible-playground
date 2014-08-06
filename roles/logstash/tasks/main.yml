@@ -1,0 +1,24 @@
+---
+- name: Add apt source
+  sudo: true
+  copy: src=logstash.list dest=/etc/apt/sources.list.d/
+
+- name: Add apt key
+  sudo: true
+  apt_key: url=http://packages.elasticsearch.org/GPG-KEY-elasticsearch state=present
+
+- name: Install logstash
+  sudo: true
+  apt: name=logstash update_cache=yes state=latest
+
+- name: Logstash config
+  sudo: true
+  copy: src=output.conf dest=/etc/logstash/conf.d/3_output.conf
+
+- name: Enable logstash
+  sudo: true
+  lineinfile: dest=/etc/default/logstash regexp=^START= line=START=yes
+
+- name: Start logstash
+  sudo: true
+  service: name=logstash state=started enabled=yes
