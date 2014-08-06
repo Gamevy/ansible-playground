@@ -6,3 +6,7 @@
 - name: Start nginx
   sudo: yes
   service: name=nginx state=started enabled=yes
+
+- name: Remove default site
+  sudo: yes
+  file: path=/etc/nginx/sites-enabled/default state=absent
