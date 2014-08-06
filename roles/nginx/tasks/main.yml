@@ -1,0 +1,8 @@
+---
+- name: Install nginx
+  sudo: yes
+  apt: name=nginx
+
+- name: Start nginx
+  sudo: yes
+  service: name=nginx state=started enabled=yes
