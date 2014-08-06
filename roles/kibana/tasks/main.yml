@@ -1,0 +1,24 @@
+---
+- name: Kibana directory
+  sudo: yes
+  file: path=/opt/kibana state=directory
+
+- name: Install kibana
+  sudo: yes
+  unarchive: src=kibana-3.1.0.tar.gz dest=/opt/kibana
+
+- name: Kibana config
+  sudo: yes
+  copy: src=config.js dest=/opt/kibana/kibana-3.1.0
+
+- name: Nginx config
+  sudo: yes
+  copy: src=nginx.conf dest=/etc/nginx/sites-available/kibana
+
+- name: Nginx config
+  sudo: yes
+  copy: src=nginx.conf dest=/etc/nginx/sites-available/kibana
+
+- name: Enable nginx
+  sudo: yes
+  file: src=/etc/nginx/sites-available/kibana dest=/etc/nginx/sites-enabled/kibana state=link
