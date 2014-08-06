@@ -19,6 +19,10 @@
   sudo: true
   copy: src=output.conf dest=/etc/logstash/conf.d/3_output.conf
 
+- name: Add logstash user to adm group
+  sudo: true
+  user: name=logstash groups=adm append=yes
+
 - name: Enable logstash
   sudo: true
   lineinfile: dest=/etc/default/logstash regexp=^START= line=START=yes
