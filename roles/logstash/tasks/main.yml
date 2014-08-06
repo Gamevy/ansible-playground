@@ -11,7 +11,11 @@
   sudo: true
   apt: name=logstash update_cache=yes state=latest
 
-- name: Logstash config
+- name: Logstash input config
+  sudo: true
+  copy: src=inputs.conf dest=/etc/logstash/conf.d/1_inputs.conf
+
+- name: Logstash output config
   sudo: true
   copy: src=output.conf dest=/etc/logstash/conf.d/3_output.conf
 
