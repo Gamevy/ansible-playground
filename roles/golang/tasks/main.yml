@@ -1,0 +1,31 @@
+---
+- name: Untar go binaries
+  sudo: yes
+  unarchive: src=go1.3.linux-amd64.tar.gz dest=/usr/local creates=/usr/local/go
+
+- name: Add gopath
+  lineinfile: dest=/home/vagrant/.profile line="export GOPATH=/go"
+
+- name: Add go to path
+  lineinfile: dest=/home/vagrant/.profile line="export PATH=$PATH:/usr/local/go/bin:/go/bin"
+
+- name: Install git
+  sudo: yes
+  apt: name=git
+
+- name: Chown go folder
+  sudo: yes
+  file: path=/go state=directory owner=vagrant group=vagrant
+
+- name: Chown go src folder
+  sudo: yes
+  file: path=/go/src state=directory owner=vagrant group=vagrant
+
+- name: Chown go github folder
+  sudo: yes
+  file: path=/go/src/github.com state=directory owner=vagrant group=vagrant
+
+- name: Go get google_auth_proxy
+  shell: export PATH=$PATH:/usr/local/go/bin && GOPATH=/go go get github.com/bitly/google_auth_proxy
+  args:
+    executable: /bin/bash
