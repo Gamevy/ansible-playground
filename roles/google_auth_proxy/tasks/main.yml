@@ -1,0 +1,38 @@
+---
+- name: Create group
+  sudo: yes
+  group: name=google_auth_proxy
+
+- name: Create user
+  sudo: yes
+  user: name=google_auth_proxy group=google_auth_proxy
+
+- name: Create folder
+  sudo: yes
+  file: path=/opt/google_auth_proxy state=directory owner=google_auth_proxy group=google_auth_proxy
+
+- name: Create bin folder
+  sudo: yes
+  file: path=/opt/google_auth_proxy/bin state=directory owner=google_auth_proxy group=google_auth_proxy
+
+- name: Create log folder
+  sudo: yes
+  file: path=/var/log/google_auth_proxy state=directory owner=google_auth_proxy group=google_auth_proxy
+
+- name: Copy executable
+  sudo: yes
+  copy: src=google_auth_proxy dest=/opt/google_auth_proxy/bin/ owner=google_auth_proxy group=google_auth_proxy mode=544
+
+- include: init_script.yml
+  vars:
+    cookie_domain: "yourdomain.com"
+    redirect_url: "https://yourdomain.com/oauth2/callback"
+    ga_domain: "yourdomain.com"
+    upstream_uri: "http://localhost:8080/"
+    cookie_secret: "S3cR3t"
+    client_id: "yourappid.apps.googleusercontent.com"
+    client_secret: "your_client_secret"
+
+- name: Start service
+  sudo: yes
+  service: name=google_auth_proxy state=started enabled=yes

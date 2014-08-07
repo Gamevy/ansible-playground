@@ -1,2 +1,4 @@
 ---
 - hosts: all
+  roles:
+    - google_auth_proxy

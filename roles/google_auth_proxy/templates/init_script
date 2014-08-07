@@ -1,0 +1,112 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides: google_auth_proxy
+# Required-Start: $local_fs $remote_fs
+# Required-Stop: $local_fs $remote_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: S 0 1 6
+# Short-Description: Google Auth Proxy
+# Description: Starts Google Auth Proxy as a daemon.
+### END INIT INFO
+
+USER=google_auth_proxy
+GROUP=google_auth_proxy
+DESC="Google Auth Proxy"
+NAME=gauthproxy
+DAEMON=/opt/google_auth_proxy/bin/google_auth_proxy
+ARGS="--cookie-domain={{ cookie_domain }} --redirect-url={{ redirect_url }} --google-apps-domain={{ ga_domain }} --upstream={{ upstream_uri }} --cookie-secret={{ cookie_secret }} --client-id={{ client_id }} --client-secret={{ client_secret }}"
+SCRIPTNAME=/etc/init.d/google_auth_proxy
+PID="/var/run/google_auth_proxy.pid"
+LOGFILE="/var/log/google_auth_proxy/google_auth_proxy.log"
+
+# Exit if the package is not installed
+if [ ! -x "$DAEMON" ]; then
+{
+  echo "Couldn't find $DAEMON"
+  exit 99
+}
+fi
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+  echo  start-stop-daemon --start \
+      --make-pidfile \
+      --name $NAME \
+      --pidfile $PID \
+      --background \
+      --chuid $USER:$GROUP \
+      --exec /bin/bash -- -c "$DAEMON $ARGS >> $LOGFILE 2>&1"
+  
+
+  start-stop-daemon --start \
+      --make-pidfile \
+      --name $NAME \
+      --pidfile $PID \
+      --background \
+      --chuid $USER:$GROUP \
+      --exec /bin/bash -- -c "$DAEMON $ARGS >> $LOGFILE 2>&1" \
+  || return 2
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+  # Return
+  # 0 if daemon has been stopped
+  # 1 if daemon was already stopped
+  # 2 if daemon could not be stopped
+  # other if a failure occurred
+  start-stop-daemon --stop --pidfile $PID --quiet --oknodo
+  sudo pkill $DAEMON -ef || true
+  RETVAL="$?"
+  rm -f $PID
+  return "$RETVAL"
+}
+
+case "$1" in
+  start)
+    echo "Starting $DESC"
+    do_start
+    case "$?" in
+      0|1)  ;;
+      2) echo Error ;;
+    esac
+    ;;
+  stop)
+    echo "Stopping $DESC"
+    do_stop
+    case "$?" in
+      0|1) ;;
+      2) echo Error ;;
+    esac
+    ;;
+  restart)
+    echo "Restarting $DESC"
+    do_stop
+    case "$?" in
+      0|1)
+        do_start
+        case "$?" in
+          0) echo  ;;
+          1) echo Error: Old process is still running ;;
+          *) echo Error: Failed to start ;; 
+        esac
+        ;;
+      *)
+        # Failed to stop
+        echo 1
+        ;;
+    esac
+    ;;
+  *)
+    echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+    exit 3
+    ;;
+esac
+
+exit 0

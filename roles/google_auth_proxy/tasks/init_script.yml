@@ -1,0 +1,4 @@
+---
+- name: Copy init script
+  sudo: yes
+  template: src=init_script dest=/etc/init.d/google_auth_proxy mode=754
